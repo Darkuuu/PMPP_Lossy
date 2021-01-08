@@ -238,6 +238,7 @@ void RendererRBUC8x8<T>::initCuda(T *h_volume, cudaExtent volumeSize, cudaExtent
 												{
 													unsigned int xr = (xa << 2) + x0;
 													T val = h_volume[xr + volumeSize.width * (yr + volumeSize.height * zr)];
+													// * Shift by 2 left = x * 4
 													raw_dat[x0 + ((y0 + (z0 << 2)) << 2)] = val;
 													tmp.push_back(val);
 													key = (key * 13) + getVal<T>(val);
@@ -806,6 +807,9 @@ ushort4 predict(ushort4 *raw, ushort4 avg, ushort4 min, ushort4 max, unsigned in
 	return make_ushort4(pred.x, pred.y, pred.z, pred.w);
 }
 
+/**
+* 
+*/
 template <class T>
 void transformGradient(T *raw, T *delta, T min, T max)
 {
@@ -1067,6 +1071,11 @@ unsigned short getMax(unsigned short a, unsigned short b) { return std::max(a, b
 uchar4 getMax(uchar4 a, uchar4 b) { return make_uchar4(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z), std::max(a.w, b.w)); }
 ushort4 getMax(ushort4 a, ushort4 b) { return make_ushort4(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z), std::max(a.w, b.w)); }
 
+/** * unsigned char* comp is unnecessary, since it is not used in this function. 
+ * Probably was done that way to match compress_internal2 parameters
+ * Determines the minimum and maximum as mentioned in Lossless Paper ch. 3.3:
+ * "First, we store the range of a brick as two uncompressed values min and max."
+ */
 template <class T>
 void compress_internal1(T *raw, unsigned char *comp, T &min, T &max)
 {
