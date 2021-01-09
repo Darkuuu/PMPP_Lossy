@@ -17,6 +17,9 @@ double sqerr;
 #include "OffsetVolume.h"
 #include "CompressedVolume.h"
 
+/*** OWN IMPLEMENTED FUNCTIONS ***/
+#include "CUDA_compress.h"
+
 int bitMode = 2;
 
 extern bool displayEntropy;
@@ -1104,24 +1107,36 @@ unsigned int compress_internal2(T *raw, unsigned char *comp, T &min, T &max)
 		}
 		{
 			typedef typename std::conditional<std::is_same<T, unsigned char>::value || std::is_same<T, unsigned short>::value, ushort, ushort4>::type T2;
+			T2 swizzled[64];
+#ifdef OWN_FUNCTIONS
+			TransformHaar_GPU(raw, swizzled, min, max);
+#else
 			T2 delta[64];
 			transformHaar(raw, delta, min, max);
-			T2 swizzled[64];
 			swizzleWavelet(delta, swizzled);
+#endif
 			size[1] = compressRBUC8x8(swizzled, temp[1]);
 		}
 		{
+			T swizzled[64];
+#ifdef OWN_FUNCTIONS
+			SubtractMax_GPU(raw, swizzled, max);
+#else
 			T delta[64];
 			transformSubMax(raw, delta, min, max);
-			T swizzled[64];
 			swizzleRegular(delta, swizzled);
+#endif
 			size[2] = compressRBUC8x8(swizzled, temp[2]);
 		}
 		{
+			T swizzled[64];
+#ifdef OWN_FUNCTIONS
+			SubtractMin_GPU(raw, swizzled, min);
+#else
 			T delta[64];
 			transformSubMin(raw, delta, min, max);
-			T swizzled[64];
 			swizzleRegular(delta, swizzled);
+#endif
 			size[3] = compressRBUC8x8(swizzled, temp[3]);
 		}
 		for (unsigned int i = 0; i < 4; i++)
