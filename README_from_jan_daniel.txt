@@ -7,6 +7,8 @@ Code in current state does calculate all four predicator functions on GPU by get
 transfering it to GPU, doing ONE predicator function, transfering it back to CPU, encoding it and starting with
 the next predicator function.
 
+We also commented everything in the code we would've looked into, if we hadn't mismanage our time so badly.
+
 Missing is following:
 - port the encoding on GPU (and calculate one brick completely on GPU)
 - distribute the bricks on GPU (potentially with streams to achieve high overlap on memory/computation).

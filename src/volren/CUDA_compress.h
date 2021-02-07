@@ -107,11 +107,14 @@ __global__ void TransformGradient_kernel(T *raw, T *swizzle, T min, T max)
 	SwizzleRegular_kernel(delta, swizzle);
 }
 
-/*** Works right now only with 8 bit data (all benchmark data is 8 bit) ***/
+/* Works right now only with 8 bit data (all benchmark data is loaded as 8 bit)
+*  This code has potentially a lot of warp divergence (block size is 64 thus 2 warps
+*  which uses a lot of branches with modulo => not good). Try to work out a better indices
+*  scheme or even change the approach completely. Also a lot of synchronisation overhead.
+*/
 template<class T, class T2>
 __global__ void TransformHaar_kernel(T *raw, T2 *swizzle, T min, T max)
 {
-	// TODO
 	T avg = getAvg_Device(min, max);
 	__shared__ T2 delta[64];
 	__shared__ int dlt[64];
