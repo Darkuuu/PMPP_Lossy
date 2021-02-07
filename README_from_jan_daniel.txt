@@ -11,3 +11,4 @@ Missing is following:
 - port the encoding on GPU (and calculate one brick completely on GPU)
 - distribute the bricks on GPU (potentially with streams to achieve high overlap on memory/computation).
 - lossy
+- evaluation with nvprof (to check for right memory usage, if memory or computation bound, warp divergence, occupancy, etc.)
