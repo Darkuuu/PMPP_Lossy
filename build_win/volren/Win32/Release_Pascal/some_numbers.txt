@@ -1,0 +1,14 @@
+Bucky:
+CPU: 3ms
+GPU: 583 ms
+
+Present:
+CPU: 2701 ms
+GPU: 317484 ms
+
+Christmas Tree:
+CPU: 275782 ms
+GPU: 2494735 ms
+
+
+
